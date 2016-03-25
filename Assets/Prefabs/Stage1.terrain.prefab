@@ -11,7 +11,7 @@ GameObject:
   - 218: {fileID: 21823594}
   - 154: {fileID: 15449872}
   m_Layer: 0
-  m_Name: Stage1
+  m_Name: Stage1.terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
