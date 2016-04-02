@@ -15,19 +15,7 @@ public class MoveOnPath : MonoBehaviour
     [SerializeField]
     float speed;
 
-    Subject<Vector3> mouseUpSubject = new Subject<Vector3>();
-    Subject<Vector3> mouseDownSubject = new Subject<Vector3>();
     const string groundLayerName = "Ground";
-
-
-    void OnMouseUp()
-    {
-        mouseUpSubject.OnNext(Input.mousePosition);
-    }
-    void OnMouseDown()
-    {
-        mouseDownSubject.OnNext(Input.mousePosition);
-    }
 
     // Use this for initialization
     void Awake()
@@ -35,7 +23,10 @@ public class MoveOnPath : MonoBehaviour
         distination = transform.position;
         RaycastHit hit;
 
-        mouseUpSubject.SkipUntil(mouseDownSubject).Repeat()
+        this.OnMouseUpAsObservable()
+            .SkipUntil(this.OnMouseDownAsObservable())
+            .Select(unit => Input.mousePosition)
+            .Repeat()
             .Subscribe(v =>
             {
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(v), out hit, Mathf.Infinity, LayerMask.GetMask(groundLayerName)))
@@ -51,7 +42,6 @@ public class MoveOnPath : MonoBehaviour
                     if (angle < -180) angle += 360;
 
                     var omega = angle / timeToRotateSec;
-
                     this.UpdateAsObservable()
                         .TakeUntil(Observable.Timer(TimeSpan.FromSeconds(timeToRotateSec)))
                         .Subscribe(unit =>
